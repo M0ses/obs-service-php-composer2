@@ -43,8 +43,8 @@ OBS service for fetching php requirements with php-composer2.
 %postun
 
 %files
-#%license COPYING
-#%doc ChangeLog README
+%license LICENSE
+%doc README.md
 %dir /usr/lib/obs
 %dir /usr/lib/obs/service
 %{obs_service_dir}/php-composer2
