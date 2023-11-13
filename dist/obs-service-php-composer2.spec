@@ -33,6 +33,7 @@ Requires:  php-composer2
 OBS service for fetching php requirements with php-composer2.
 
 %prep
+%autosetup
 
 %build
 
