@@ -1,0 +1,75 @@
+#!/usr/bin/python3
+#
+import re
+import glob
+import os
+import subprocess
+import shutil
+import argparse
+import sys
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("--outdir",
+                    help="output directory")
+
+parser.add_argument("--no-hidden",
+                    help="execlude hidden files",
+                    default=False)
+
+args = parser.parse_args(sys.argv[1:])
+
+if not args.outdir:
+    raise SystemExit('No --outdir specified')
+
+#os.mkdir(args.outdir)
+old_cwd =  os.getcwd()
+
+info_file=None
+obs_info = {}
+basename=None
+tar_file=None
+
+for i in glob.glob('*.obsinfo'):
+    info_file = i
+
+for i in os.listdir('.'):
+    if re.match('.*\.tar(\.gz|\.xz|\.bz2.|\.zstd)?$', i):
+        tar_file = i
+
+if info_file:
+    with open(info_file) as file:
+        for l in file:
+            l = l.strip()
+            (key, val) = re.split('\s*:\s*', l, 1)
+            obs_info[key] = val
+
+    basename = obs_info['name']+'-'+obs_info['version']
+
+    check_cpio = (os.path.join(old_cwd, basename + ".obscpio"), os.path.join(old_cwd, "_service:obs_scm:"+ basename + ".obscpio"))
+    cpio_file = None
+    for c in check_cpio:
+        #print(c)
+        if (os.path.exists(c)):
+            cpio_file = c
+
+    if not cpio_file:
+        raise SystemExit("No cpio found")
+        
+    subprocess.run(["cpio", "-idF", cpio_file])
+elif tar_file:
+    subprocess.run(["tar", "-xf", tar_file])
+else:
+    raise SystemExit("no .obsinfo file found")
+
+rundir  = os.path.join(old_cwd, basename)
+outfile = os.path.join(args.outdir, "vendor.tar")
+subprocess.run(["composer", "install", "--ignore-platform-reqs", '-q'], cwd=rundir)
+cmd = ["tar"]
+if args.no_hidden:
+    cmd.append("--exclude='.*'")
+cmd = cmd + ["-c", "-f", outfile, "vendor"]
+print("%r" % cmd)
+subprocess.run(cmd, cwd=rundir)
+shutil.rmtree(rundir)
+os.chdir(old_cwd)

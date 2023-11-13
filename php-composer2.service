@@ -1,0 +1,16 @@
+<service name="php-composer2">
+  <summary>PHP Composer2 Service</summary>
+  <description><![CDATA[
+  This service fetches deps via php composer.
+  ]]>
+  </description>
+  <parameter name="no-hidden">
+    <description>Exclude hidden files (values: true/false)</description>
+  </parameter>
+<!--
+  <parameter name="bool1">
+    <description>First boolean parameter</description>
+  </parameter>
+-->
+</service>
+
