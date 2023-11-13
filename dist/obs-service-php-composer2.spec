@@ -23,9 +23,7 @@ Release:        0
 Summary:	OBS service for fetching php requirements with php-composer2
 License:        GPL-3.0
 URL:            https://github.com/M0ses/obs-service-php-composer2
-Source0:        php-composer2
-Source1:        php-composer2.service
-Source2:        Makefile
+Source0:        %{name}-%{version}.tar.xz
 BuildRequires:  php-composer2
 Requires:  php-composer2
 
